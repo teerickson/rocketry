@@ -2,15 +2,17 @@
 
 # directories
 SRCDIR		:= src
+OBJDIR		:= obj
 BINDIR		:= bin
 INCLUDEDIR	:= library/include
 LIBDIR		:= library/lib
 
 # basic definitions for rules
-SOURCES		:= $(shell find $(SRCDIR) -type f -name *.c)
-TARGETS		:= $(SOURCES:$(SRCDIR)/%.c=$(BINDIR)/%)
+OBJ_SOURCES	:= $(shell find $(SRCDIR) -mindepth 2 -type f -name *.c)
+EXE_SOURCES	:= $(shell find $(SRCDIR) -maxdepth 1 -type f -name *.c)
+OBJ_TARGETS	:= $(OBJ_SOURCES:$(SRCDIR)/%.c=%.o)
+EXE_TARGETS	:= $(EXE_SOURCES:$(SRCDIR)/%.c=$(BINDIR)/%)
 INCLUDES	:= $(shell find $(INCLUDEDIR) -name '*.h')
-SOURCES		:= $(shell find $(SRCDIR) -type f -name *.c)
 
 # compiler and linker programs
 CC		:= gcc
@@ -35,9 +37,7 @@ LINKNAME	:= link_to_startup_program
 prefix		?= /usr
 
 
-
-
-all : $(TARGETS)
+all : $(OBJ_TARGETS) $(EXE_TARGETS) 
 
 debug :
 	$(MAKE) $(MAKEFILE) DEBUGFLAG="-g -D DEBUG"
@@ -47,20 +47,18 @@ debug :
 
 clean :
 	@$(RM) $(BINDIR)
+	@$(RM) $(OBJDIR)
 	@echo "Make Clean Complete"
 
-install:
-	$(MAKE)
-	@$(INSTALLDIR) $(DESTDIR)$(prefix)/bin
-	@for f in $(TARGETS); do $(INSTALL) $$f $(DESTDIR)$(prefix)/bin/; done
-	@echo "Make Install complete"
+$(OBJ_TARGETS) : $(OBJ_SOURCES)
+	echo "Make objs"
+	echo $(OBJ_TARGETS)
+	mkdir -p $(OBJDIR)
+	$(CC) -c -o $(OBJDIR)/$(notdir $@) $< $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $(LDFLAGS)
+	echo "made :$@"
 
-uninstall:
-	@for f in $(TARGETS); do $(RM) $(DESTDIR)$(prefix)/$$f; done
-	@echo "Make Uninstall complete"
-
-
-$(BINDIR)/% : $(SRCDIR)/%.c
-	@mkdir -p $(BINDIR)
-	@$(CC) -o $@ $< $(CFLAGS) $(WFLAGS)  $(DEBUGFLAG) $(LDFLAGS)
-	@echo "made: $@"
+$(EXE_TARGETS) : $(EXE_SOURCES) $(OBJ_TARGETS)
+	echo "Make exes"
+	mkdir -p $(BINDIR)
+	$(CC) -o $@ $< $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $(LDFLAGS)
+	echo "made: $@"
