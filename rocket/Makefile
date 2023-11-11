@@ -48,17 +48,15 @@ debug :
 clean :
 	@$(RM) $(BINDIR)
 	@$(RM) $(OBJDIR)
+	@echo " "
 	@echo "Make Clean Complete"
 
 $(OBJ_TARGETS) : $(OBJ_SOURCES)
-	echo "Make objs"
-	echo $(OBJ_TARGETS)
-	mkdir -p $(OBJDIR)
+	@mkdir -p $(OBJDIR)
 	$(CC) -c -o $(OBJDIR)/$(notdir $@) $< $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $(LDFLAGS)
-	echo "made :$@"
+	@echo "made :$@"
 
 $(EXE_TARGETS) : $(EXE_SOURCES) $(OBJ_TARGETS)
-	echo "Make exes"
 	mkdir -p $(BINDIR)
 	$(CC) -o $@ $< $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $(LDFLAGS)
-	echo "made: $@"
+	@echo "made: $@"
