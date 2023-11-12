@@ -12,7 +12,7 @@ OBJ_SOURCES	:= $(shell find $(SRCDIR) -mindepth 2 -type f -name *.c)
 OBJ_SOURCES_CPP	:= $(shell find $(SRCDIR) -mindepth 2 -type f -name *.cpp)
 EXE_SOURCES	:= $(shell find $(SRCDIR) -maxdepth 1 -type f -name *.c)
 OBJ_TARGETS	:= $(OBJ_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)%.o)
-OBJ_TARGETS_CPP	:= $(OBJ_SOURCES_CPP:$(SRCDIR)/%.c=$(OBJDIR)%.o)
+OBJ_TARGETS_CPP	:= $(OBJ_SOURCES_CPP:$(SRCDIR)/%.cpp=$(OBJDIR)%.o)
 EXE_TARGETS	:= $(EXE_SOURCES:$(SRCDIR)/%.c=$(BINDIR)/%)
 INCLUDES	:= $(shell find $(INCLUDEDIR) -name '*.h')
 
@@ -58,16 +58,19 @@ clean :
 	@echo "Make Clean Complete"
 
 $(OBJ_TARGETS) : $(OBJ_SOURCES)
+	@echo " "
 	@mkdir -p $(dir $@)
 	$(CC) -c -std=c99 -o $@ $< $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $(LDFLAGS)
 	@echo "made :$@"
 
 $(OBJ_TARGETS_CPP) : $(OBJ_SOURCES_CPP)
+	@echo " "
 	@mkdir -p $(dir $@)
 	$(CPP) -c -std=c++0x -o $@ $< $(CFLAGS) $(WFLAGS_CPP) $(DEBUGFLAG) $(LDFLAGS)
 	@echo "made :$@"
 
 $(EXE_TARGETS) : $(EXE_SOURCES) $(OBJ_TARGETS) $(OBJ_TARGETS_CPP)
-	mkdir -p $(BINDIR)
+	@echo " "
+	@mkdir -p $(BINDIR)
 	$(CC) -o $@ $< $(CFLAGS) $(WFLAGS) $(DEBUGFLAG) $(LDFLAGS)
 	@echo "made: $@"
