@@ -11,8 +11,8 @@ LIBDIR		:= library/lib
 OBJ_SOURCES	:= $(shell find $(SRCDIR) -mindepth 2 -type f -name *.c)
 OBJ_SOURCES_CPP	:= $(shell find $(SRCDIR) -mindepth 2 -type f -name *.cpp)
 EXE_SOURCES	:= $(shell find $(SRCDIR) -maxdepth 1 -type f -name *.c)
-OBJ_TARGETS	:= $(OBJ_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)%.o)
-OBJ_TARGETS_CPP	:= $(OBJ_SOURCES_CPP:$(SRCDIR)/%.cpp=$(OBJDIR)%.o)
+OBJ_TARGETS	:= $(OBJ_SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+OBJ_TARGETS_CPP	:= $(OBJ_SOURCES_CPP:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 EXE_TARGETS	:= $(EXE_SOURCES:$(SRCDIR)/%.c=$(BINDIR)/%)
 INCLUDES	:= $(shell find $(INCLUDEDIR) -name '*.h')
 
